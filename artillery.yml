@@ -1,0 +1,21 @@
+
+# artillery.yml
+# Objetivo: realizar pruebas de carga crecientes contra el balanceador (localhost:8080).
+config:
+  target: "http://localhost:8080"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Básico"
+    - duration: 60
+      arrivalRate: 20
+      name: "Carga media"
+    - duration: 60
+      arrivalRate: 50
+      name: "Estrés"
+scenarios:
+  - name: "GET raíz y salud"
+    flow:
+      - get: { url: "/" }
+      - get: { url: "/" }
+      - get: { url: "/" }
