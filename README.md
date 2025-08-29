@@ -23,6 +23,6 @@ vagrant up web1 web2
 artillery run artillery.yml
 ### 3. **URLs para verificar:**
 - **http://localhost:8080** - Aplicación balanceada
-- **http://localhost:8404** - Estadísticas de HAProxy
+- **http://localhost:8404/haproxy?stats** - Estadísticas de HAProxy
 - **http://localhost:8500** - Interfaz web de Consul
 
