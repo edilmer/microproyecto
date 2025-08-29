@@ -1,10 +1,28 @@
 # Microproyecto
-para iniciar e instalar las VM 
-Comandos:
-vagrant ssh balanceador
-vagrant ssh web1
-vagrant ssh web2
+## Como ejecutar el programa:
+### 1. **Prerequisitos**
+Necesitas tener instalado:
+- **Vagrant**
+- **VirtualBox**
+- **Artillery** (para pruebas de carga)
+
+### 2. **Pasos:**
+
+# 1. Primero levanta el balanceador
+vagrant up balanceador
+
+# 2. Luego levanta los servidores web
+vagrant up web1 web2
+
+# 3. Verificar que todo este funcionando
+# - Aplicacion: http://localhost:8080
+# - HAProxy Stats: http://localhost:8404  
+# - Consul UI: http://localhost:8500
+
+# 4. Ejecuta las pruebas de carga
 artillery run artillery.yml
-VMs: balanceador (192.168.56.10), web1 (192.168.56.11), web2 (192.168.56.12)
-Puertos: 8080 (HTTP), 8404 (HAProxy stats), 8500 (Consul UI)
+### 3. **URLs para verificar:**
+- **http://localhost:8080** - Aplicación balanceada
+- **http://localhost:8404** - Estadísticas de HAProxy
+- **http://localhost:8500** - Interfaz web de Consul
 
