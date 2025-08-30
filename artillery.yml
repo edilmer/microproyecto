@@ -6,13 +6,13 @@ config:
   phases:
     - duration: 60
       arrivalRate: 5
-      name: "Básico"
+      name: "Basico"
     - duration: 60
       arrivalRate: 20
-      name: "Carga media"
+      name: "Media"
     - duration: 60
       arrivalRate: 50
-      name: "Estrés"
+      name: "Alta"
 scenarios:
   - name: "GET raíz y salud"
     flow:

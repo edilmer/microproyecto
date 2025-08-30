@@ -18,8 +18,16 @@ if ! command -v consul >/dev/null 2>&1; then
   chmod +x /usr/local/bin/consul
 fi
 
-# Detecta IP de la VM para bind_addr
-IP=$(hostname -I | awk '{print $1}')
+# Detecta IP privada de la VM para bind_addr (busca en el rango 192.168.56.x)
+# Si no encuentra una IP privada, usa la primera IP disponible como fallback
+IP=$(ip route get 1 | grep -oP 'src \K\S+' 2>/dev/null || hostname -I | awk '{print $2}' 2>/dev/null || hostname -I | awk '{print $1}')
+
+# Si la IP detectada está en el rango NAT (10.0.2.x), busca la interfaz privada
+if [[ "$IP" =~ ^10\.0\.2\. ]]; then
+    IP=$(ip addr show | grep -oP '192\.168\.56\.\d+' | head -1 || echo "$IP")
+fi
+
+echo "Configurando Consul server con IP: $IP"
 
 # Archivo de configuración principal del servidor Consul
 cat >/etc/consul.d/server.hcl <<EOF

@@ -18,13 +18,13 @@ Connection: close
 Content-Type: text/html
 
 <html><body><h1>Servicio temporalmente no disponible</h1>
-<p>Por el momento no hay servidores disponibles para atender su solicitud.</p>
+<p>Por el momento no hay servidores.</p>
 </body></html>
 EOF
 
 # Configuración principal de HAProxy:
-# - 'resolvers consul' usa el DNS de Consul (127.0.0.1:8600) para descubrir 'web.service.consul'
-# - 'server-template' crea dinámicamente hasta 10 servidores a partir de registros SRV
+# - Usa servidores estáticos con health checks para garantizar estabilidad
+# - Los servidores se definen explícitamente para cada instancia Node.js
 # - 'listen stats' habilita el panel de estadísticas
 cat >/etc/haproxy/haproxy.cfg <<'EOF'
 global
@@ -51,21 +51,19 @@ listen stats
     stats refresh 5s
     stats auth admin:admin
 
-# Resolver DNS que consulta a Consul (puerto 8600)
-resolvers consul
-    parse-resolv-conf
-    hold valid 10s
-    nameserver consul 127.0.0.1:8600
-
 # Entrada HTTP del balanceador
 frontend http_front
     bind *:80
     default_backend web_back
 
-# Backend con descubrimiento dinámico de las instancias 'web' registradas en Consul
+# Backend dinámico usando SRV de Consul para 'web.service.consul'
 backend web_back
     balance roundrobin
-    server-template web 10 web.service.consul resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    option httpchk GET /health
+    http-check expect status 200
+    # hasta 10 instancias dinámicas; usa lo que devuelva Consul
+    server-template web 10 web.service.consul resolvers consul \
+      resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr last
 EOF
 
 # Habilita y (re)inicia HAProxy

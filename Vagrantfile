@@ -28,6 +28,7 @@ Vagrant.configure("2") do |config|
   # VM: web1 (NodeJS + Consul Agent)==================================================================================================
   config.vm.define "web1" do |web|
     web.vm.hostname = "web1"
+    web.vm.boot_timeout = 600
     web.vm.network "private_network", ip: "192.168.56.11"                   # IP privada de la web1
 
     # Provisioners para Node.js + registro en Consul
