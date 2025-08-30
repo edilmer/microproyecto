@@ -16,4 +16,4 @@ apt-get install -y nodejs
 # Prepara el directorio de la app Node y cede propiedad al usuario vagrant
 mkdir -p /opt/nodeapp
 chown -R vagrant:vagrant /opt/nodeapp
-  
+   

@@ -26,7 +26,7 @@ IP=$(ip route get 1 | grep -oP 'src \K\S+' 2>/dev/null || hostname -I | awk '{pr
 if [[ "$IP" =~ ^10\.0\.2\. ]]; then
     IP=$(ip addr show | grep -oP '192\.168\.56\.\d+' | head -1 || echo "$IP")
 fi
-
+ 
 echo "Configurando Consul server con IP: $IP" 
 
 # Archivo de configuración principal del servidor Consul

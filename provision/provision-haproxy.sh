@@ -1,16 +1,14 @@
-
 #!/usr/bin/env bash
 # provision-haproxy.sh
-# Objetivo: instalar HAProxy, habilitar la UI de stats y configurar descubrimiento vía DNS de Consul.
 set -euo pipefail
 
 apt-get update -y
-apt-get install -y haproxy
+apt-get install -y haproxy rsyslog
 
-# Habilita HAProxy en sistemas donde /etc/default/haproxy controla el arranque
+# Asegura que haproxy arranque en distros que usan /etc/default/haproxy
 sed -i 's/ENABLED=0/ENABLED=1/' /etc/default/haproxy || true
 
-# Página personalizada para errores 503 (cuando no hay backends disponibles)
+# Página de error 503
 cat >/etc/haproxy/errors/503custom.http <<'EOF'
 HTTP/1.0 503 Service Unavailable
 Cache-Control: no-cache
@@ -22,10 +20,7 @@ Content-Type: text/html
 </body></html>
 EOF
 
-# Configuración principal de HAProxy:
-# - Usa servidores estáticos con health checks para garantizar estabilidad
-# - Los servidores se definen explícitamente para cada instancia Node.js
-# - 'listen stats' habilita el panel de estadísticas
+# Config principal (con SRV de Consul)
 cat >/etc/haproxy/haproxy.cfg <<'EOF'
 global
     log /dev/log local0
@@ -43,6 +38,15 @@ defaults
     timeout server  50s
     errorfile 503 /etc/haproxy/errors/503custom.http
 
+# Resolvedor DNS apuntando a Consul
+resolvers consul
+    nameserver consul 127.0.0.1:8600
+    accepted_payload_size 8192
+    resolve_retries 3
+    timeout resolve 1s
+    timeout retry   1s
+    hold valid 10s
+
 # UI de estadísticas (usuario: admin / clave: admin)
 listen stats
     bind *:8404
@@ -51,21 +55,24 @@ listen stats
     stats refresh 5s
     stats auth admin:admin
 
-# Entrada HTTP del balanceador
+# Entrada HTTP
 frontend http_front
     bind *:80
     default_backend web_back
 
-# Backend dinámico usando SRV de Consul para 'web.service.consul'
+# Backend dinámico usando SRV de Consul: _web._tcp.service.consul
 backend web_back
     balance roundrobin
     option httpchk GET /health
     http-check expect status 200
-    # hasta 10 instancias dinámicas; usa lo que devuelva Consul
-    server-template web 10 web.service.consul resolvers consul \
-      resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr last
+    default-server check inter 3s fall 2 rise 2
+    # hasta 10 instancias dinámicas descubiertas por SRV
+    server-template web 10 _web._tcp.service.consul resolvers consul \
+        resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr last,libc,none
 EOF
-
-# Habilita y (re)inicia HAProxy
+ 
+systemctl enable rsyslog
+systemctl restart rsyslog
 systemctl enable haproxy
 systemctl restart haproxy
+

@@ -23,7 +23,7 @@ Vagrant.configure("2") do |config|
     lb.vm.provision "shell", path: "provision/provision-common.sh"          # utilidades base + Node.js
     lb.vm.provision "shell", path: "provision/provision-consul-server.sh"   # instala/activa Consul en modo servidor con UI
     lb.vm.provision "shell", path: "provision/provision-haproxy.sh"         # instala/activa HAProxy + stats + error 503
-  end
+  end 
 
   # VM: web1 (NodeJS + Consul Agent)==================================================================================================
   config.vm.define "web1" do |web|

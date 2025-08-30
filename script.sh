@@ -51,7 +51,7 @@ check_services() {
     vagrant ssh web2 -c "sudo systemctl is-active consul && echo 'Consul OK' || echo 'Consul ERROR'"
     vagrant ssh web2 -c "sudo systemctl is-active nodeapp@3000 && echo 'NodeApp 3000 OK' || echo 'NodeApp 3000 ERROR'"
 } 
-
+ 
 # Función para probar el balanceador
 test_load_balancer() {
     print_status "INFO" "Probando balanceador de carga..."
