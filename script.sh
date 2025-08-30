@@ -4,25 +4,6 @@
 
 set -euo pipefail
 
-# Colores para output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-# Función para imprimir con colores
-print_status() {
-    local status=$1
-    local message=$2
-    case $status in
-        "OK") echo -e "${GREEN}✅ ${message}${NC}" ;;
-        "ERROR") echo -e "${RED}❌ ${message}${NC}" ;;
-        "WARNING") echo -e "${YELLOW}⚠️  ${message}${NC}" ;;
-        "INFO") echo -e "${BLUE}ℹ️  ${message}${NC}" ;;
-    esac
-}
-
 # Función para verificar el estado del sistema
 check_system() {
     print_status "INFO" "Verificando estado del sistema..."
@@ -52,7 +33,7 @@ check_system() {
     fi
 }
 
-# Función para verificar servicios internos
+# Función para verificar servicios internos 
 check_services() {
     print_status "INFO" "Verificando servicios internos..."
     
@@ -69,7 +50,7 @@ check_services() {
     echo -e "\n${BLUE}Estado de servicios en web2:${NC}"
     vagrant ssh web2 -c "sudo systemctl is-active consul && echo 'Consul OK' || echo 'Consul ERROR'"
     vagrant ssh web2 -c "sudo systemctl is-active nodeapp@3000 && echo 'NodeApp 3000 OK' || echo 'NodeApp 3000 ERROR'"
-}
+} 
 
 # Función para probar el balanceador
 test_load_balancer() {

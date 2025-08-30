@@ -33,7 +33,7 @@ echo "Configurando Consul agent con IP: $IP, conectando a servidor: $SERVER_IP"
 cat >/etc/consul.d/agent.hcl <<EOF
 server = false
 datacenter = "dc1"
-data_dir = "/opt/consul"
+data_dir = "/opt/consul" 
 bind_addr = "${IP}"
 client_addr = "0.0.0.0"
 retry_join = ["${SERVER_IP}"]
@@ -58,7 +58,7 @@ LimitNOFILE=65536
 [Install]
 WantedBy=multi-user.target
 EOF
-
+ 
 systemctl daemon-reload
 systemctl enable consul
 systemctl restart consul

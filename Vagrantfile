@@ -7,7 +7,7 @@
 # Se usa un único box para coherencia de librerías/paquetes: Ubuntu 22.04 (bento).
 Vagrant.configure("2") do |config|
   # Box base para todas las VMs (Ubuntu 22.04 LTS - Jammy)
-  config.vm.box = "bento/ubuntu-22.04"
+  config.vm.box = "bento/ubuntu-22.04"  
 
   # VM: balanceador (HAProxy + Consul Server)================================================================================
   config.vm.define "balanceador" do |lb|

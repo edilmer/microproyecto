@@ -9,7 +9,7 @@ CONSUL_VERSION="1.16.2"
 # Crea usuario/grupos de sistema y carpetas de datos/config
 useradd --system --home /etc/consul.d --shell /bin/false consul || true
 mkdir -p /opt/consul /etc/consul.d
-chown -R consul:consul /opt/consul /etc/consul.d
+chown -R consul:consul /opt/consul /etc/consul.d 
 
 # Descarga e instala el binario de Consul si no existe
 if ! command -v consul >/dev/null 2>&1; then
@@ -27,7 +27,7 @@ if [[ "$IP" =~ ^10\.0\.2\. ]]; then
     IP=$(ip addr show | grep -oP '192\.168\.56\.\d+' | head -1 || echo "$IP")
 fi
 
-echo "Configurando Consul server con IP: $IP"
+echo "Configurando Consul server con IP: $IP" 
 
 # Archivo de configuración principal del servidor Consul
 cat >/etc/consul.d/server.hcl <<EOF

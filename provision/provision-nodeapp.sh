@@ -1,5 +1,5 @@
 
-#!/usr/bin/env bash
+#!/usr/bin/env bash 
 # provision-nodeapp.sh
 # Objetivo: desplegar una app Node.js mínima y correr 3 réplicas vía systemd.
 set -euo pipefail
@@ -14,7 +14,7 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, {'Content-Type': 'application/json'});
     res.end(JSON.stringify({status: 'ok'}));
     return;
-  }
+  } 
   res.writeHead(200, {'Content-Type': 'text/plain'});
   res.end(`Hello from ${os.hostname()} on port ${PORT}\n`);
 });
