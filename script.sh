@@ -4,6 +4,37 @@
 
 set -euo pipefail
 
+# Colores para output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Función para imprimir mensajes con estado
+print_status() {
+    local status="$1"
+    local message="$2"
+    
+    case $status in
+        "OK")
+            echo -e "${GREEN}[OK]${NC} $message"
+            ;;
+        "ERROR")
+            echo -e "${RED}[ERROR]${NC} $message"
+            ;;
+        "WARNING")
+            echo -e "${YELLOW}[WARNING]${NC} $message"
+            ;;
+        "INFO")
+            echo -e "${BLUE}[INFO]${NC} $message"
+            ;;
+        *)
+            echo "[$status] $message"
+            ;;
+    esac
+}
+
 # Función para verificar el estado del sistema
 check_system() {
     print_status "INFO" "Verificando estado del sistema..."
@@ -45,11 +76,15 @@ check_services() {
     
     echo -e "\n${BLUE}Estado de servicios en web1:${NC}"
     vagrant ssh web1 -c "sudo systemctl is-active consul && echo 'Consul OK' || echo 'Consul ERROR'"
-    vagrant ssh web1 -c "sudo systemctl is-active nodeapp@3000 && echo 'NodeApp 3000 OK' || echo 'NodeApp 3000 ERROR'"
+    for port in 3000 3001 3002; do
+        vagrant ssh web1 -c "sudo systemctl is-active nodeapp@${port} && echo 'NodeApp ${port} OK' || echo 'NodeApp ${port} ERROR'"
+    done
     
     echo -e "\n${BLUE}Estado de servicios en web2:${NC}"
     vagrant ssh web2 -c "sudo systemctl is-active consul && echo 'Consul OK' || echo 'Consul ERROR'"
-    vagrant ssh web2 -c "sudo systemctl is-active nodeapp@3000 && echo 'NodeApp 3000 OK' || echo 'NodeApp 3000 ERROR'"
+    for port in 3000 3001 3002; do
+        vagrant ssh web2 -c "sudo systemctl is-active nodeapp@${port} && echo 'NodeApp ${port} OK' || echo 'NodeApp ${port} ERROR'"
+    done
 } 
  
 # Función para probar el balanceador
